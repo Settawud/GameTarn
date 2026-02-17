@@ -642,4 +642,427 @@ export class UiFactory {
 
         return container;
     }
+
+    // ===========================
+    //  PHASE 11: TACTILE COMPONENTS
+    // ===========================
+
+    /**
+     * Phase 11: Premium Silo Panel with beveled plank frame,
+     * aged parchment with creases & coffee stains, and item dividers.
+     */
+    static createSiloPanel(
+        scene: Phaser.Scene,
+        width: number,
+        height: number,
+        title?: string
+    ): Phaser.GameObjects.Container {
+        const container = scene.add.container(0, 0);
+        const g = scene.add.graphics();
+        container.add(g);
+
+        const radius = 22;
+
+        // === THICK BEVELED WOODEN FRAME ===
+
+        // 1. Heavy Drop Shadow (floating)
+        g.fillStyle(0x000000, 0.25);
+        g.fillRoundedRect(-width / 2 + 8, -height / 2 + 20, width, height, radius + 4);
+        // Hard shadow
+        g.fillStyle(0x000000, 0.5);
+        g.fillRoundedRect(-width / 2 + 4, -height / 2 + 14, width, height, radius + 2);
+
+        // 2. Cartoon Stroke
+        g.lineStyle(6, UI_THEME.STROKE.COLOR_BROWN, 1);
+        g.strokeRoundedRect(-width / 2, -height / 2, width, height, radius);
+
+        // 3. Dark Wood Base
+        g.fillStyle(this.COLORS.WOOD_DARK, 1);
+        g.fillRoundedRect(-width / 2, -height / 2, width, height, radius);
+
+        // 4. Gradient Volume
+        g.fillGradientStyle(
+            this.COLORS.WOOD_LIGHT, this.COLORS.WOOD_LIGHT,
+            this.COLORS.WOOD_DARK, this.COLORS.WOOD_DARK, 1
+        );
+        g.fillRoundedRect(-width / 2 + 2, -height / 2 + 2, width - 4, height - 4, radius - 1);
+
+        // 5. Staggered Horizontal Plank Seams (4 planks)
+        const plankCount = 4;
+        const plankH = (height - 8) / plankCount;
+        for (let i = 1; i < plankCount; i++) {
+            const seamY = -height / 2 + 4 + i * plankH;
+            // Seam shadow (top)
+            g.lineStyle(1.5, this.COLORS.WOOD_SHADOW, 0.3);
+            g.beginPath();
+            g.moveTo(-width / 2 + 10, seamY);
+            g.lineTo(width / 2 - 10, seamY);
+            g.strokePath();
+            // Seam highlight (bottom)
+            g.lineStyle(1, this.COLORS.RIM_LIGHT, 0.2);
+            g.beginPath();
+            g.moveTo(-width / 2 + 10, seamY + 1.5);
+            g.lineTo(width / 2 - 10, seamY + 1.5);
+            g.strokePath();
+        }
+
+        // 6. Wood Grain on each plank
+        this.drawWoodGrain(g, width - 12, height - 12);
+
+        // 7. Left/Top Rim Light (golden edge — sunlight)
+        g.fillStyle(this.COLORS.RIM_LIGHT, 0.55);
+        g.fillRoundedRect(
+            -width / 2 + 2, -height / 2 + 2,
+            width - 4, 6,
+            { tl: radius - 2, tr: radius - 2, bl: 0, br: 0 }
+        );
+        // Left edge highlight
+        g.fillStyle(this.COLORS.RIM_LIGHT, 0.3);
+        g.fillRoundedRect(
+            -width / 2 + 2, -height / 2 + 6,
+            5, height - 12,
+            { tl: 0, tr: 0, bl: radius - 2, br: 0 }
+        );
+
+        // 8. Right/Bottom Dark Bevel
+        g.fillStyle(this.COLORS.RIM_BOTTOM, 0.5);
+        g.fillRoundedRect(
+            -width / 2 + 6, height / 2 - 8,
+            width - 12, 6,
+            { tl: 0, tr: 0, bl: radius - 2, br: radius - 2 }
+        );
+        g.fillStyle(this.COLORS.RIM_BOTTOM, 0.25);
+        g.fillRoundedRect(
+            width / 2 - 7, -height / 2 + 6,
+            5, height - 12,
+            { tl: 0, tr: radius - 2, bl: 0, br: 0 }
+        );
+
+        // === AGED PARCHMENT INSET ===
+        const margin = 16;
+        const pW = width - margin * 2;
+        const pH = height - margin * 2 - (title ? 38 : 0);
+        const pY = title ? 22 : 0;
+
+        // Carved recess shadow
+        g.fillStyle(0x3E2723, 0.65);
+        g.fillRoundedRect(-pW / 2, pY - pH / 2, pW, pH, 16);
+        // Top inset shadow band
+        g.fillStyle(0x000000, 0.25);
+        g.fillRoundedRect(-pW / 2 + 2, pY - pH / 2 + 2, pW - 4, pH / 5, { tl: 14, tr: 14, bl: 0, br: 0 });
+
+        // Parchment base (warm gradient)
+        g.fillGradientStyle(
+            this.COLORS.PARCHMENT_LIGHT, this.COLORS.PARCHMENT_LIGHT,
+            this.COLORS.PARCHMENT_BASE, this.COLORS.PARCHMENT_BASE, 1
+        );
+        g.fillRoundedRect(-pW / 2 + 3, pY - pH / 2 + 4, pW - 6, pH - 6, 14);
+
+        // Coffee stains (faint brown spots)
+        g.fillStyle(0xD7CCC8, 0.12);
+        g.fillEllipse(
+            Phaser.Math.Between(-pW / 4, pW / 4),
+            pY + Phaser.Math.Between(-pH / 4, pH / 6),
+            Phaser.Math.Between(12, 22),
+            Phaser.Math.Between(10, 18)
+        );
+        g.fillStyle(0xBCAAA4, 0.08);
+        g.fillEllipse(
+            Phaser.Math.Between(-pW / 3, pW / 3),
+            pY + Phaser.Math.Between(-pH / 6, pH / 4),
+            Phaser.Math.Between(8, 14),
+            Phaser.Math.Between(6, 10)
+        );
+
+        // Crease marks (diagonal thin lines)
+        g.lineStyle(1, this.COLORS.PARCHMENT_SHADOW, 0.06);
+        const creaseCount = 3;
+        for (let c = 0; c < creaseCount; c++) {
+            const cx1 = Phaser.Math.Between(-pW / 2 + 10, pW / 2 - 10);
+            const cy1 = pY + Phaser.Math.Between(-pH / 2 + 10, pH / 2 - 10);
+            g.beginPath();
+            g.moveTo(cx1, cy1);
+            g.lineTo(cx1 + Phaser.Math.Between(-20, 20), cy1 + Phaser.Math.Between(10, 30));
+            g.strokePath();
+        }
+
+        // Fiber texture
+        this.drawParchmentTexture(g, 0, pY, pW - 10, pH - 10);
+
+        // Bottom reflection
+        g.fillStyle(0xFFFFFF, 0.08);
+        g.fillRoundedRect(-pW / 2 + 6, pY + pH / 2 - 14, pW - 12, 8, { tl: 0, tr: 0, bl: 12, br: 12 });
+
+        // === TITLE ===
+        if (title) {
+            const titleY = -height / 2 + 30;
+            const text = scene.add.text(0, titleY, title, {
+                fontFamily: 'Fredoka, sans-serif',
+                fontSize: '28px',
+                color: '#FFECB3',
+                stroke: '#3E2723',
+                strokeThickness: 8,
+                fontStyle: 'bold',
+            }).setOrigin(0.5);
+            text.setShadow(2, 3, '#3E2723', 4, true, true);
+            container.add(text);
+        }
+
+        // === CORNER NAILS ===
+        const nailOff = 14;
+        this.drawNailAt(g, -width / 2 + nailOff, -height / 2 + nailOff);
+        this.drawNailAt(g, width / 2 - nailOff, -height / 2 + nailOff);
+        this.drawNailAt(g, -width / 2 + nailOff, height / 2 - nailOff);
+        this.drawNailAt(g, width / 2 - nailOff, height / 2 - nailOff);
+
+        // Inner Rim (subtle)
+        g.lineStyle(1, 0xFFFFFF, 0.1);
+        g.strokeRoundedRect(-width / 2 + 5, -height / 2 + 5, width - 10, height - 10, radius - 4);
+
+        return container;
+    }
+
+    /**
+     * Phase 11: Draws a divider line for silo rows.
+     * Renders shadow + highlight for embossed look.
+     */
+    static drawSiloDivider(
+        g: Phaser.GameObjects.Graphics,
+        x: number, y: number,
+        width: number
+    ) {
+        // Shadow line
+        g.lineStyle(1.5, 0x3E2723, 0.15);
+        g.beginPath();
+        g.moveTo(x - width / 2, y);
+        g.lineTo(x + width / 2, y);
+        g.strokePath();
+        // Highlight line (below)
+        g.lineStyle(1, 0xFFFFFF, 0.12);
+        g.beginPath();
+        g.moveTo(x - width / 2, y + 1.5);
+        g.lineTo(x + width / 2, y + 1.5);
+        g.strokePath();
+    }
+
+    /**
+     * Phase 11: Contact shadow under an icon.
+     * Small dark ellipse that grounds the icon on the surface.
+     */
+    static drawContactShadow(
+        g: Phaser.GameObjects.Graphics,
+        x: number, y: number,
+        width: number = 18,
+        height: number = 6
+    ) {
+        g.fillStyle(0x000000, 0.18);
+        g.fillEllipse(x + 1, y + 2, width, height);
+    }
+
+    /**
+     * Phase 11: Recessed carved pocket for crop slots.
+     * Features: dark inset, metallic ring, parchment interior.
+     */
+    static createCropSlot(
+        scene: Phaser.Scene,
+        width: number,
+        height: number,
+        isLocked: boolean = false
+    ): Phaser.GameObjects.Container {
+        const container = scene.add.container(0, 0);
+        const g = scene.add.graphics();
+        container.add(g);
+
+        const radius = 16;
+
+        // === CARVED POCKET ===
+
+        // 1. Outer Shadow (pocket carved into wood)
+        g.fillStyle(0x000000, 0.4);
+        g.fillRoundedRect(-width / 2 + 2, -height / 2 + 3, width, height, radius);
+
+        // 2. Dark hole interior
+        g.fillStyle(0x3E2723, 1);
+        g.fillRoundedRect(-width / 2, -height / 2, width, height, radius);
+
+        // 3. Inset shadow (top-left darker)
+        g.fillGradientStyle(0x000000, 0x000000, 0x000000, 0x000000);
+        g.fillStyle(0x000000, 0.35);
+        g.fillRoundedRect(-width / 2 + 1, -height / 2 + 1, width - 2, height / 3, { tl: radius - 1, tr: radius - 1, bl: 0, br: 0 });
+
+        // 4. Parchment Interior (cream fill)
+        const inset = 4;
+        const innerW = width - inset * 2;
+        const innerH = height - inset * 2;
+        g.fillGradientStyle(
+            this.COLORS.PARCHMENT_LIGHT, this.COLORS.PARCHMENT_LIGHT,
+            this.COLORS.PARCHMENT_BASE, this.COLORS.PARCHMENT_BASE, 1
+        );
+        g.fillRoundedRect(-innerW / 2, -innerH / 2 + 2, innerW, innerH, radius - 3);
+
+        // Micro fiber texture
+        g.fillStyle(this.COLORS.PARCHMENT_SHADOW, 0.05);
+        for (let i = 0; i < 8; i++) {
+            g.fillCircle(
+                Phaser.Math.Between(-innerW / 2 + 4, innerW / 2 - 4),
+                Phaser.Math.Between(-innerH / 2 + 6, innerH / 2 - 4),
+                Phaser.Math.Between(1, 2)
+            );
+        }
+
+        // 5. Bottom-right reflected light
+        g.fillStyle(0xFFFFFF, 0.1);
+        g.fillRoundedRect(-innerW / 2 + 4, innerH / 2 - 8, innerW - 8, 5, { tl: 0, tr: 0, bl: radius - 4, br: radius - 4 });
+
+        // === METALLIC RING ===
+
+        // Ring shadow (outer)
+        g.lineStyle(4, 0x000000, 0.15);
+        g.strokeRoundedRect(-width / 2 - 1, -height / 2 - 1, width + 2, height + 2, radius + 1);
+
+        // Dark base ring
+        g.lineStyle(3, 0x616161, 1);
+        g.strokeRoundedRect(-width / 2, -height / 2, width, height, radius);
+
+        // Silver highlight (bright inner edge)
+        g.lineStyle(1.5, 0xBDBDBD, 0.8);
+        g.strokeRoundedRect(-width / 2 + 1, -height / 2 + 1, width - 2, height - 2, radius - 1);
+
+        // Specular dots on ring (top-left)
+        g.fillStyle(0xFFFFFF, 0.65);
+        g.fillCircle(-width / 2 + 8, -height / 2 + 6, 2);
+        g.fillStyle(0xFFFFFF, 0.4);
+        g.fillCircle(-width / 2 + 14, -height / 2 + 4, 1.2);
+
+        // === DARKENED OVERLAY FOR LOCKED ===
+        if (isLocked) {
+            g.fillStyle(0x000000, 0.45);
+            g.fillRoundedRect(-innerW / 2, -innerH / 2 + 2, innerW, innerH, radius - 3);
+        }
+
+        return container;
+    }
+
+    /**
+     * Phase 11: Rusty padlock with shackle and chain links.
+     * Draws over a locked crop slot.
+     */
+    static drawPadlock(
+        g: Phaser.GameObjects.Graphics,
+        x: number, y: number
+    ) {
+        // === IRON SHACKLE (U-shape arc) ===
+        const shackleW = 14;
+        const shackleH = 10;
+        // Shadow
+        g.fillStyle(0x000000, 0.3);
+        g.fillRect(x - shackleW / 2 + 1, y - 16, 3, shackleH + 2);
+        g.fillRect(x + shackleW / 2 - 3, y - 16, 3, shackleH + 2);
+        // Shackle bars
+        g.fillStyle(0x616161, 1);
+        g.fillRect(x - shackleW / 2, y - 18, 3, shackleH);
+        g.fillRect(x + shackleW / 2 - 2, y - 18, 3, shackleH);
+        // Shackle top (arc approximation — wide rect with rounded top)
+        g.fillStyle(0x757575, 1);
+        g.fillRoundedRect(x - shackleW / 2, y - 20, shackleW + 1, 6, { tl: 6, tr: 6, bl: 0, br: 0 });
+        // Shackle highlight
+        g.fillStyle(0xBDBDBD, 0.5);
+        g.fillRect(x - shackleW / 2, y - 20, 2, 4);
+
+        // === PADLOCK BODY ===
+        const lockW = 18;
+        const lockH = 14;
+        const lockR = 4;
+
+        // Shadow
+        g.fillStyle(0x000000, 0.35);
+        g.fillRoundedRect(x - lockW / 2 + 1, y - 8 + 2, lockW, lockH, lockR);
+
+        // Rust-brown gradient body
+        g.fillStyle(0x795548, 1);
+        g.fillRoundedRect(x - lockW / 2, y - 8, lockW, lockH, lockR);
+        // Lighter top half
+        g.fillStyle(0x8D6E63, 1);
+        g.fillRoundedRect(x - lockW / 2 + 1, y - 8, lockW - 2, lockH / 2, { tl: lockR - 1, tr: lockR - 1, bl: 0, br: 0 });
+
+        // Keyhole
+        g.fillStyle(0x3E2723, 1);
+        g.fillCircle(x, y - 3, 2.5);
+        g.fillRect(x - 1, y - 2, 2, 4);
+
+        // Surface scratches (rust detail)
+        g.lineStyle(0.5, 0x4E342E, 0.2);
+        g.beginPath();
+        g.moveTo(x - 6, y - 6); g.lineTo(x - 2, y - 4);
+        g.moveTo(x + 3, y - 5); g.lineTo(x + 7, y - 2);
+        g.moveTo(x - 4, y + 1); g.lineTo(x + 2, y + 3);
+        g.strokePath();
+
+        // Specular highlight
+        g.fillStyle(0xFFFFFF, 0.35);
+        g.fillCircle(x - 5, y - 6, 1.5);
+
+        // Cartoon stroke around body
+        g.lineStyle(1.5, 0x3E2723, 0.8);
+        g.strokeRoundedRect(x - lockW / 2, y - 8, lockW, lockH, lockR);
+    }
+
+    /**
+     * Phase 11: Chain links draping across a slot.
+     * Draws 3-4 oval chain links in a diagonal line.
+     */
+    static drawChainLinks(
+        g: Phaser.GameObjects.Graphics,
+        startX: number, startY: number,
+        endX: number, endY: number,
+        linkCount: number = 4
+    ) {
+        const dx = (endX - startX) / linkCount;
+        const dy = (endY - startY) / linkCount;
+
+        for (let i = 0; i < linkCount; i++) {
+            const lx = startX + dx * i + dx / 2;
+            const ly = startY + dy * i + dy / 2;
+            const isVertical = i % 2 === 0;
+
+            const linkW = isVertical ? 5 : 8;
+            const linkH = isVertical ? 8 : 5;
+
+            // Link shadow
+            g.fillStyle(0x000000, 0.25);
+            g.fillEllipse(lx + 1, ly + 1.5, linkW + 1, linkH + 1);
+
+            // Dark iron fill
+            g.fillStyle(0x616161, 1);
+            g.fillEllipse(lx, ly, linkW, linkH);
+
+            // Inner hole
+            g.fillStyle(0x000000, 0.3);
+            g.fillEllipse(lx, ly, linkW - 3, linkH - 3);
+
+            // Highlight strip
+            g.fillStyle(0xBDBDBD, 0.4);
+            g.fillEllipse(lx - 1, ly - 1, linkW / 2, linkH / 3);
+        }
+    }
+
+    /**
+     * Phase 11: Golden selection glow ring (replaces flat green stroke).
+     */
+    static drawGoldenSelectionRing(
+        g: Phaser.GameObjects.Graphics,
+        width: number,
+        height: number,
+        radius: number = 18
+    ) {
+        // Outer glow
+        g.lineStyle(5, 0xFFD54F, 0.3);
+        g.strokeRoundedRect(-width / 2 - 4, -height / 2 - 4, width + 8, height + 8, radius + 4);
+        // Main ring
+        g.lineStyle(3, 0xFFD54F, 0.9);
+        g.strokeRoundedRect(-width / 2 - 2, -height / 2 - 2, width + 4, height + 4, radius + 2);
+        // Inner bright edge
+        g.lineStyle(1, 0xFFECB3, 0.6);
+        g.strokeRoundedRect(-width / 2 - 1, -height / 2 - 1, width + 2, height + 2, radius + 1);
+    }
 }

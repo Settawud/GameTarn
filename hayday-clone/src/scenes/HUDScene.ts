@@ -158,7 +158,7 @@ export class HUDScene extends Phaser.Scene {
     }
 
     // ===========================
-    //  INVENTORY PANEL
+    //  INVENTORY PANEL (Phase 11: Tactile Silo)
     // ===========================
     private createInventoryPanel(gm: GameManager) {
         const panelW = 110;
@@ -168,24 +168,37 @@ export class HUDScene extends Phaser.Scene {
         const panelX = this.scale.width - panelW / 2 - 5;
         const panelY = this.scale.height / 2;
 
-        // Use UiFactory for the wooden panel
-        const panel = UiFactory.createPanel(this, panelW, panelH, 'Silo');
+        // Phase 11: Premium Silo Panel (beveled planks + aged parchment)
+        const panel = UiFactory.createSiloPanel(this, panelW, panelH, 'Silo');
         panel.setPosition(panelX, panelY);
         this.add.existing(panel);
 
+        // Graphics layer for dividers + contact shadows
+        const detailGfx = this.add.graphics();
+        panel.add(detailGfx);
+
         // Calculate start Y relative to panel center
         const contentStartY = -panelH / 2 + 65; // Below title
+        const dividerW = panelW - 50;
 
         CROP_LIST.forEach((crop, i) => {
             const y = contentStartY + i * itemH;
+
+            // Divider line between rows (skip first)
+            if (i > 0) {
+                UiFactory.drawSiloDivider(detailGfx, 0, y - itemH / 2, dividerW);
+            }
+
+            // Contact shadow under icon (grounds icon on parchment)
+            UiFactory.drawContactShadow(detailGfx, -30, y + 6, 16, 5);
 
             // Icon
             const icon = this.add.sprite(-30, y, crop.iconTexture).setScale(0.09);
             panel.add(icon);
 
-            // Quantity text
+            // Quantity text (badge style)
             const qty = gm.getInventoryQuantity(crop.id);
-            const text = this.add.text(0, y, `${qty}`, {
+            const text = this.add.text(6, y, `${qty}`, {
                 fontSize: '18px',
                 fontFamily: 'Fredoka, sans-serif',
                 color: UiFactory.COLORS.TEXT_DARK,
@@ -384,25 +397,33 @@ export class HUDScene extends Phaser.Scene {
         const w = 56;
         const h = 64;
 
-        // Custom "Card" style using UiFactory
-        const color = isLocked ? UiFactory.COLORS.WOOD_DARK : UiFactory.COLORS.PARCHMENT_BASE;
-        const card = UiFactory.createCard(this, w, h, color);
-        container.add(card);
+        // Phase 11: Recessed carved pocket with metallic ring
+        const slot = UiFactory.createCropSlot(this, w, h, isLocked);
+        container.add(slot);
+
+        // Contact shadow under icon
+        const shadowGfx = this.add.graphics();
+        UiFactory.drawContactShadow(shadowGfx, 0, 2, 18, 5);
+        container.add(shadowGfx);
 
         // Crop icon
         const icon = this.add.sprite(0, -6, crop.iconTexture).setScale(0.09);
         if (isLocked) {
             icon.setTint(0x555555);
-            icon.setAlpha(0.6);
+            icon.setAlpha(0.5);
         }
         container.add(icon);
 
         // Label/Lock
         if (isLocked) {
-            const lockIcon = this.add.text(0, 18, '🔒', { fontSize: '14px', fontFamily: 'Fredoka' }).setOrigin(0.5);
-            container.add(lockIcon);
+            // Phase 11: Rusty padlock + chain links
+            const lockGfx = this.add.graphics();
+            UiFactory.drawPadlock(lockGfx, 0, 14);
+            // Chain links draping diagonally
+            UiFactory.drawChainLinks(lockGfx, -w / 2 + 6, -h / 2 + 8, w / 2 - 6, h / 2 - 8, 3);
+            container.add(lockGfx);
         } else {
-            // Phase 10: Premium price tag pill
+            // Premium price tag pill
             const tag = this.add.graphics();
             // Tag shadow
             tag.fillStyle(0x000000, 0.25);
@@ -430,13 +451,9 @@ export class HUDScene extends Phaser.Scene {
             container.add(costText);
         }
 
-        // Selection ring
-        // We'll overlay a bright green selection frame
+        // Phase 11: Golden selection ring (replaces green stroke)
         const ring = this.add.graphics();
-        ring.lineStyle(3, 0x76FF03, 1); // Bright green
-        // Match squircle shape roughly
-        const r = Math.min(w, h) / 3.5 + 2;
-        ring.strokeRoundedRect(-w / 2 - 2, -h / 2 - 2, w + 4, h + 4, r);
+        UiFactory.drawGoldenSelectionRing(ring, w, h, 16);
         ring.setName('ring');
         ring.setVisible(index === 0 && !isLocked);
         container.add(ring);
