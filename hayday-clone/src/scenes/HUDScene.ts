@@ -41,14 +41,17 @@ export class HUDScene extends Phaser.Scene {
         // ===== BOTTOM TOOL / CROP SELECTOR =====
         this.createBottomBar();
 
-        // ===== INSTRUCTIONS =====
-        this.add.text(this.scale.width / 2, this.scale.height - 12, '🖱 Right-click drag to pan  •  Scroll to zoom', {
+        // ===== INSTRUCTIONS (Premium Typography) =====
+        const instrText = this.add.text(this.scale.width / 2, this.scale.height - 12, '🖱 Right-click drag to pan  •  Scroll to zoom', {
             fontSize: '11px',
+            fontFamily: 'Fredoka, sans-serif',
             color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 2,
-            align: 'center'
+            stroke: '#3E2723',
+            strokeThickness: 3,
+            align: 'center',
+            fontStyle: 'bold'
         }).setOrigin(0.5);
+        instrText.setShadow(1, 2, '#000000', 2, true, true);
 
         // ===== EVENT LISTENERS =====
         gm.events.on('update-gold', (gold: number) => {
@@ -88,13 +91,14 @@ export class HUDScene extends Phaser.Scene {
         // star.setStrokeStyle(3, 0x000000); // Sprites don't support stroke style directly
 
         this.levelText = this.add.text(starX, starY, `${gm.getLevel()}`, {
-            fontSize: '26px',
-            fontFamily: 'Fredoka',
+            fontSize: '28px',
+            fontFamily: 'Fredoka, sans-serif',
             color: '#FFFFFF',
             stroke: '#3E2723',
-            strokeThickness: 4,
+            strokeThickness: 7,
             fontStyle: 'bold'
         }).setOrigin(0.5);
+        this.levelText.setShadow(2, 3, '#3E2723', 4, true, true);
 
         // XP Bar
         const xpX = 90;
@@ -110,13 +114,14 @@ export class HUDScene extends Phaser.Scene {
         this.updateXpBar(gm.getXp(), gm.getLevel());
 
         this.xpText = this.add.text(xpX + xpW / 2, xpY + 12, `${gm.getXp()} XP`, {
-            fontSize: '12px',
-            fontFamily: 'Fredoka',
+            fontSize: '13px',
+            fontFamily: 'Fredoka, sans-serif',
             color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 2,
+            stroke: '#3E2723',
+            strokeThickness: 4,
             fontStyle: 'bold'
         }).setOrigin(0.5);
+        this.xpText.setShadow(1, 2, '#3E2723', 2, true, true);
 
         // Gold Display
         const goldX = this.scale.width - 20;
@@ -128,17 +133,24 @@ export class HUDScene extends Phaser.Scene {
         coinBar.setPosition(goldX - goldW / 2, goldY);
         this.add.existing(coinBar);
 
-        // Scale down the giant coin
+        // Scale down the giant coin + specular glint (Phase 10)
         this.add.sprite(goldX - goldW + 10, goldY, 'coin_icon').setScale(0.12);
+        // Specular highlight on coin
+        const coinGlint = this.add.graphics();
+        coinGlint.fillStyle(0xFFFFFF, 0.6);
+        coinGlint.fillCircle(goldX - goldW + 7, goldY - 4, 2.5);
+        coinGlint.fillStyle(0xFFFFFF, 0.3);
+        coinGlint.fillCircle(goldX - goldW + 11, goldY - 2, 1.5);
 
         this.goldText = this.add.text(goldX - 20, goldY, `${gm.getGold()}`, {
-            fontSize: '20px',
-            fontFamily: 'Fredoka',
+            fontSize: '22px',
+            fontFamily: 'Fredoka, sans-serif',
             color: '#FFD54F',
             stroke: '#3E2723',
-            strokeThickness: 4,
+            strokeThickness: 6,
             fontStyle: 'bold'
         }).setOrigin(1, 0.5);
+        this.goldText.setShadow(2, 2, '#3E2723', 3, true, true);
 
         // Game Logo (Scaled down)
         const centerX = this.scale.width / 2;
@@ -174,11 +186,14 @@ export class HUDScene extends Phaser.Scene {
             // Quantity text
             const qty = gm.getInventoryQuantity(crop.id);
             const text = this.add.text(0, y, `${qty}`, {
-                fontSize: '16px',
-                fontFamily: 'Fredoka',
+                fontSize: '18px',
+                fontFamily: 'Fredoka, sans-serif',
                 color: UiFactory.COLORS.TEXT_DARK,
+                stroke: '#BF360C',
+                strokeThickness: 3,
                 fontStyle: 'bold'
             }).setOrigin(0, 0.5);
+            text.setShadow(1, 1, '#3E2723', 2, true, true);
 
             panel.add(text);
             this.inventoryTexts.set(crop.id, text);
@@ -208,13 +223,14 @@ export class HUDScene extends Phaser.Scene {
 
         // Title for selector
         const selectorTitle = this.add.text(centerX, barY - 56, 'Select Crop', {
-            fontSize: '14px',
-            fontFamily: 'Fredoka',
-            color: '#FFFFFF',
+            fontSize: '16px',
+            fontFamily: 'Fredoka, sans-serif',
+            color: '#FFECB3',
             stroke: '#3E2723',
-            strokeThickness: 3,
+            strokeThickness: 5,
             fontStyle: 'bold'
         }).setOrigin(0.5);
+        selectorTitle.setShadow(2, 2, '#3E2723', 3, true, true);
         this.cropSelectorGroup.add(selectorTitle);
 
         CROP_LIST.forEach((crop, i) => {
@@ -232,8 +248,10 @@ export class HUDScene extends Phaser.Scene {
         const scytheIcon = this.add.sprite(0, -10, 'tool_scythe').setScale(1.4);
         this.scytheBtn.add(scytheIcon);
         const scytheText = this.add.text(0, 18, 'Tap Field to Harvest', {
-            fontSize: '12px', color: '#ffccbc', stroke: '#000000', strokeThickness: 2, fontStyle: 'bold'
+            fontSize: '13px', fontFamily: 'Fredoka, sans-serif', color: '#FFECB3', stroke: '#3E2723',
+            strokeThickness: 4, fontStyle: 'bold'
         }).setOrigin(0.5);
+        scytheText.setShadow(1, 2, '#3E2723', 3, true, true);
         this.scytheBtn.add(scytheText);
 
         this.scytheBtn.setVisible(false);
@@ -314,8 +332,13 @@ export class HUDScene extends Phaser.Scene {
     private showCropTooltip(x: number, y: number, crop: CropInfo, isLocked: boolean = false) {
         this.hideCropTooltip();
         this.tooltipBg = this.add.graphics();
-        this.tooltipBg.fillStyle(0x000000, 0.85);
-        this.tooltipBg.fillRoundedRect(x - 60, y - 16, 120, 32, 6);
+        // Phase 10: Premium tooltip with shadow and rounded corners
+        this.tooltipBg.fillStyle(0x000000, 0.3);
+        this.tooltipBg.fillRoundedRect(x - 62, y - 14, 124, 36, 12);
+        this.tooltipBg.fillStyle(0x3E2723, 0.92);
+        this.tooltipBg.fillRoundedRect(x - 60, y - 16, 120, 32, 10);
+        this.tooltipBg.lineStyle(2, UiFactory.COLORS.WOOD_BASE, 0.6);
+        this.tooltipBg.strokeRoundedRect(x - 60, y - 16, 120, 32, 10);
 
         let textStr = '';
         let color = '#ffffff';
@@ -329,12 +352,14 @@ export class HUDScene extends Phaser.Scene {
         }
 
         this.tooltipText = this.add.text(x, y, textStr, {
-            fontSize: '10px',
+            fontSize: '11px',
+            fontFamily: 'Fredoka, sans-serif',
             color: color,
-            stroke: '#000000',
-            strokeThickness: 1,
+            stroke: '#3E2723',
+            strokeThickness: 2,
             fontStyle: 'bold'
         }).setOrigin(0.5);
+        this.tooltipText.setShadow(1, 1, '#000000', 2, true, true);
     }
 
     private hideCropTooltip() {
@@ -377,22 +402,31 @@ export class HUDScene extends Phaser.Scene {
             const lockIcon = this.add.text(0, 18, '🔒', { fontSize: '14px', fontFamily: 'Fredoka' }).setOrigin(0.5);
             container.add(lockIcon);
         } else {
-            // Price tag pill
+            // Phase 10: Premium price tag pill
             const tag = this.add.graphics();
+            // Tag shadow
+            tag.fillStyle(0x000000, 0.25);
+            tag.fillRoundedRect(-23, 14, 48, 16, 8);
+            // Tag fill
             tag.fillStyle(UiFactory.COLORS.WOOD_BASE, 1);
             tag.fillRoundedRect(-24, 12, 48, 16, 8);
-            // Phase 9: Cartoon stroke for contrast
+            // Cartoon stroke
             tag.lineStyle(2, UiFactory.COLORS.WOOD_SHADOW, 1);
             tag.strokeRoundedRect(-24, 12, 48, 16, 8);
+            // Tag highlight
+            tag.fillStyle(0xFFFFFF, 0.2);
+            tag.fillRoundedRect(-22, 13, 44, 6, { tl: 6, tr: 6, bl: 0, br: 0 });
             container.add(tag);
 
             const costText = this.add.text(0, 20, `${crop.seedCost}💰`, {
                 fontSize: '11px',
+                fontFamily: 'Fredoka, sans-serif',
                 color: '#FFD54F',
-                stroke: '#000000',
-                strokeThickness: 2,
-                fontFamily: 'Fredoka'
+                stroke: '#3E2723',
+                strokeThickness: 3,
+                fontStyle: 'bold'
             }).setOrigin(0.5);
+            costText.setShadow(1, 1, '#000000', 2, true, true);
             container.add(costText);
         }
 
@@ -494,12 +528,14 @@ export class HUDScene extends Phaser.Scene {
         const star = this.add.sprite(cx, cy, 'star').setScale(0).setAlpha(0);
 
         const text = this.add.text(cx, cy + 40, `LEVEL ${level}!`, {
-            fontSize: '48px',
-            color: '#ffd700',
-            stroke: '#000000',
-            strokeThickness: 6,
+            fontSize: '52px',
+            fontFamily: 'Fredoka, sans-serif',
+            color: '#FFD54F',
+            stroke: '#3E2723',
+            strokeThickness: 10,
             fontStyle: 'bold'
         }).setOrigin(0.5).setAlpha(0).setScale(0.5);
+        text.setShadow(3, 4, '#3E2723', 6, true, true);
 
         this.tweens.add({
             targets: star,

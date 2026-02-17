@@ -444,35 +444,41 @@ export class MainScene extends Phaser.Scene {
         // Scythe
         // (Loaded in preload)
 
-        // Order Board (World Object) - Phase 8 Sun-Soaked
+        // Order Board (World Object) - Phase 10 Premium
         g.clear();
-        // Posts (Dark Wood - Persimmon)
+
+        // Posts (Dark Wood - Persimmon) with highlight
         g.fillStyle(0xE65100, 1);
         g.fillRect(8, 0, 6, 55);
         g.fillRect(36, 0, 6, 55);
+        // Post highlights (sunlit edge)
+        g.fillStyle(0xFFCC80, 0.5);
+        g.fillRect(8, 0, 2, 55);
+        g.fillRect(36, 0, 2, 55);
 
-        // Board Base (Wood - Apricot)
+        // Board Base (Wood - Apricot) with gradient
         g.fillStyle(0xFFB74D, 1);
         g.fillRoundedRect(0, 10, 50, 40, 4);
-        g.lineStyle(2, 0xBF360C, 1); // Stroke - Deep Red Brown
+        // Plank seam (vertical divider)
+        g.lineStyle(1, 0xE65100, 0.3);
+        g.beginPath(); g.moveTo(25, 12); g.lineTo(25, 48); g.strokePath();
+        // Cartoon stroke
+        g.lineStyle(2, 0x3E2723, 1);
         g.strokeRoundedRect(0, 10, 50, 40, 4);
 
         // Inner Recess (Darker - Deep Red Brown)
         g.fillStyle(0xBF360C, 1);
-        g.fillRoundedRect(4, 14, 42, 32, 2);
+        g.fillRoundedRect(4, 14, 42, 32, 3);
 
         // Papers (Parchment orders pinned)
-        // Paper 1
         g.fillStyle(0xfff9c4, 1);
         g.fillRect(8, 18, 14, 10);
-        g.fillStyle(0x000000, 0.2); // Text lines
+        g.fillStyle(0x000000, 0.2);
         g.fillRect(10, 20, 10, 1); g.fillRect(10, 23, 8, 1);
-        // Paper 2
         g.fillStyle(0xfff9c4, 1);
         g.fillRect(26, 20, 12, 12);
         g.fillStyle(0x000000, 0.2);
         g.fillRect(28, 22, 8, 1); g.fillRect(28, 25, 6, 1);
-        // Paper 3 (Pinned overlap)
         g.fillStyle(0xffecb3, 1);
         g.fillRect(16, 30, 18, 12);
         g.fillStyle(0x000000, 0.2);
@@ -481,13 +487,38 @@ export class MainScene extends Phaser.Scene {
         // Red Pin
         g.fillStyle(0xd32f2f, 1);
         g.fillCircle(25, 31, 1.5);
+        g.fillStyle(0xFFFFFF, 0.5);
+        g.fillCircle(24.5, 30.5, 0.5); // Pin specular
 
-        // Header / Roof (Deep Red Brown)
+        // Rope Detail (wavy line across top of board)
+        g.lineStyle(2, 0x8D6E63, 0.7);
+        g.beginPath();
+        g.moveTo(4, 12);
+        g.lineTo(10, 14);
+        g.lineTo(17, 13);
+        g.lineTo(25, 11);
+        g.lineTo(33, 13);
+        g.lineTo(40, 14);
+        g.lineTo(46, 12);
+        g.strokePath();
+        // Rope knot
+        g.fillStyle(0x6D4C41, 0.6);
+        g.fillCircle(25, 12, 2);
+
+        // Header / Roof (Deep Red Brown) with gradient
         g.fillStyle(0xBF360C, 1);
         g.beginPath();
         g.moveTo(-4, 10);
         g.lineTo(54, 10);
         g.lineTo(25, 2);
+        g.closePath();
+        g.fillPath();
+        // Roof highlight
+        g.fillStyle(0xFFCC80, 0.3);
+        g.beginPath();
+        g.moveTo(10, 9);
+        g.lineTo(25, 3);
+        g.lineTo(40, 9);
         g.closePath();
         g.fillPath();
 
